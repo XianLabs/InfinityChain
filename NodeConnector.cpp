@@ -1,63 +1,116 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include "NodeConnector.h"
-#pragma comment(lib, "ws2_32")
+#pragma comment (lib, "Ws2_32.lib")
+#pragma comment (lib, "Mswsock.lib")
+#pragma comment (lib, "AdvApi32.lib")
 
 NodeConnector::NodeConnector(string hostAddr, unsigned short nPort)
 {
-	char buffer[256] = { 0 };
-	this->Socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->Socket < 0)
-	{
-		printf("ERROR opening socket: %d\n", WSAGetLastError());
+	WSADATA wsaData;
+	SOCKET ConnectSocket = INVALID_SOCKET;
+	struct addrinfo *result = NULL,*ptr = NULL,	hints;
+	const char *sendbuf = "IFX_GetPrevHash";
+	const char *sendbuf_work = "IFX_GetBlock";
+	char recvbuf[1024] = { 0 };
+	int iResult;
+	int recvbuflen = 1024;
+
+	// Initialize Winsock
+	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (iResult != 0) {
+		printf("WSAStartup failed with error: %d\n", iResult);
 		return;
 	}
 
-	this->server = gethostbyname(hostAddr.c_str());
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
 
-	if (this->server == NULL) 
-	{
-		fprintf(stderr, "ERROR, no such host\n");
-		closesocket(this->Socket);
+	// Resolve the server address and port
+	iResult = getaddrinfo(hostAddr.c_str(), "7777", &hints, &result);
+	if (iResult != 0) {
+		printf("getaddrinfo failed with error: %d\n", iResult);
+		WSACleanup();
 		return;
 	}
 
-	ZeroMemory((char *)&serv_addr, sizeof(serv_addr));
-	serv_addr.sin_family = AF_INET;
-	memcpy((char *)server->h_addr,
-		(char *)&serv_addr.sin_addr.s_addr,
-		server->h_length);
+	// Attempt to connect to an address until one succeeds
+	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 
-	serv_addr.sin_port = htons(nPort);
-	
-	if (connect(this->Socket, (struct sockaddr *) &this->serv_addr, sizeof(this->serv_addr)) < 0)
-	{
-		printf("ERROR connecting: %d\n", WSAGetLastError());
-		closesocket(this->Socket);
+		// Create a SOCKET for connecting to server
+		ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
+			ptr->ai_protocol);
+		if (ConnectSocket == INVALID_SOCKET) {
+			printf("socket failed with error: %ld\n", WSAGetLastError());
+			WSACleanup();
+			return;
+		}
+
+		// Connect to server.
+		iResult = connect(ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		if (iResult == SOCKET_ERROR) {
+			closesocket(ConnectSocket);
+			ConnectSocket = INVALID_SOCKET;
+			continue;
+		}
+		break;
+	}
+
+	freeaddrinfo(result);
+
+	if (ConnectSocket == INVALID_SOCKET) {
+		printf("Unable to connect to server!\n");
+		WSACleanup();
 		return;
 	}
 
-	printf("Please enter the message: ");
-
-	fgets(buffer, 255, stdin);
-	
-	int bytesSent = send(this->Socket, buffer, strlen(buffer), 0);
-	if (bytesSent <= 0)
-	{
-		printf("Error sending message.\n");
-		closesocket(this->Socket);
+	// Send an initial buffer
+	iResult = send(ConnectSocket, sendbuf_work, (int)strlen(sendbuf_work), 0);
+	if (iResult == SOCKET_ERROR) {
+		printf("send failed with error: %d\n", WSAGetLastError());
+		closesocket(ConnectSocket);
+		WSACleanup();
 		return;
 	}
 
-	char RecvBuffer[1024] = { 0 };
+	printf("Bytes Sent: %ld\n", iResult);
 
-	int bytesRecieved = recv(this->Socket, RecvBuffer, 1024, 0);
-	if (bytesRecieved <= 0)
-	{
-		printf("Error recieving message.\n");
-		closesocket(this->Socket);
+	// shutdown the connection since no more data will be sent
+	iResult = shutdown(ConnectSocket, SD_SEND);
+	if (iResult == SOCKET_ERROR) {
+		printf("shutdown failed with error: %d\n", WSAGetLastError());
+		closesocket(ConnectSocket);
+		WSACleanup();
 		return;
 	}
 
-	printf("Message: %s\n", RecvBuffer);
+	// Receive until the peer closes the connection
+	do {
+
+		iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+		if (iResult > 0)
+			printf("Bytes received: %d\n", iResult);
+		else if (iResult == 0)
+			printf("Connection closed\n");
+		else
+			printf("recv failed with error: %d\n", WSAGetLastError());
+
+		printf("%s\n", recvbuf);
+
+		if (strstr(recvbuf, "IFXStartWork:2") != NULL)
+		{
+			printf("Starting mining block 2...\n");
+			Blockchain bChain = Blockchain();
+			bChain.AddBlock(Block(2, "SENSITIVE INFO!"));
+		}
+
+
+	} while (iResult > 0);
+
+	// cleanup
+	closesocket(ConnectSocket);
+	WSACleanup();
+
 }
