@@ -1,14 +1,24 @@
 #include "Blockchain.h"
 #include "NodeConnector.h"
+#include "NodeServer.h"
 
 bool NodeConnect(string hostAddr, unsigned short nPort)
 {
-	NodeConnector* n = new NodeConnector("127.0.0.1", 7777);
+	NodeConnector* n = new NodeConnector(hostAddr.c_str(), 7777);
 	if (n == NULL)
 	{
 		printf("Failed to construct Node Connector: %d.\n", GetLastError());
 		return false;
 	}
+
+	return true;
+}
+
+bool StartServer(unsigned short nPort)
+{
+	NodeServer* NS = new NodeServer(7777);
+	NS->Listen();
+
 
 	return true;
 }
@@ -37,7 +47,7 @@ void MainMenu()
 	{
 		case 1:
 
-			for (int i = 1; i <= 10; i++)
+			for (int i = 1; i <= 1; i++)
 			{
 				cout << "Mining block " << i << endl;
 				bChain.AddBlock(Block(i, "SENSITIVE INFO!"));
@@ -46,12 +56,13 @@ void MainMenu()
 			break;
 
 		case 2:
+			NodeConnect("127.0.0.1", 7777);
 
 			break;
 
 		case 3:
-			
 
+			StartServer(7777);
 
 			break;
 
