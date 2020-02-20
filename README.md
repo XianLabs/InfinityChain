@@ -1,0 +1,2 @@
+# InfinityChain
+C++ Blockchain implementation
