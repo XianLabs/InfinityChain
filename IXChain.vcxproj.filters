@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{28f5888e-9bb9-43ed-878c-11477b4fe2c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IXChain">
+      <UniqueIdentifier>{fee9c98f-525e-472e-96f8-4f4148a9a1c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wallet">
+      <UniqueIdentifier>{4e1903aa-e9c3-4494-96bb-f077bd33d02c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Client">
+      <UniqueIdentifier>{0a70822c-77ac-44bd-9158-bec57bf49456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Server">
+      <UniqueIdentifier>{414fe396-e405-4389-a680-ac3a7ee36a85}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sha256.cpp">
+      <Filter>IXChain</Filter>
+    </ClCompile>
+    <ClCompile Include="Blockchain.cpp">
+      <Filter>IXChain</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>IXChain</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeConnector.cpp">
+      <Filter>Network\Client</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sha256.h">
+      <Filter>IXChain</Filter>
+    </ClInclude>
+    <ClInclude Include="Blockchain.h">
+      <Filter>IXChain</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>IXChain</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeConnector.h">
+      <Filter>Network\Client</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
