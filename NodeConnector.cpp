@@ -16,11 +16,7 @@ int NodeConnector::ConnectToPeer(string HostName, unsigned short nPort)
 {
 	WSADATA wsaData;
 	struct addrinfo *result = NULL, *ptr = NULL, hints;
-	const char *sendbuf = "IFX_GetPrevHash";
-	const char *sendbuf_work = "IFX_GetBlock";
-	char recvbuf[1024] = { 0 };
 	int iResult;
-	int recvbuflen = 1024;
 
 	// Initialize Winsock
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
