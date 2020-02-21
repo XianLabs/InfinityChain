@@ -1,6 +1,7 @@
 #include "Blockchain.h"
 #include "NodeConnector.h"
 #include "NodeServer.h"
+#include "Wallet.h"
 
 bool NodeConnect(string hostAddr, unsigned short nPort)
 {
@@ -11,6 +12,14 @@ bool NodeConnect(string hostAddr, unsigned short nPort)
 		return false;
 	}
 
+	return true;
+}
+
+bool NewWalletTest(string CoinName, string Name)
+{
+	Wallet* W = new Wallet(CoinName, Name);
+	cout << "Creating " << CoinName << " wallet: " << Name << endl;
+	printf("%s\n", W->GenerateWalletAddress().c_str());
 	return true;
 }
 
@@ -37,6 +46,7 @@ void MainMenu()
 	cout << "3. Join network\n";
 	cout << "4. Check wallet balance\n";
 	cout << "5. Send IXF to wallet\n";
+	cout << "6. Generate new wallet\n";
 
 	int option;
 
@@ -70,6 +80,12 @@ void MainMenu()
 
 			break;
 		case 5:
+
+			break;
+
+		case 6:
+
+			NewWalletTest("Shitcoin", "SCAMWALLET");
 
 			break;
 
